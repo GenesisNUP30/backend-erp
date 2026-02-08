@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'dni',
+        'telefono',
+        'rol',
+        'fecha_alta',
+        'fecha_baja',
     ];
 
     /**
@@ -43,6 +48,35 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'fecha_alta' => 'date',
+            'fecha_baja' => 'date',
         ];
     }
+
+    //Relaciones
+    public function recolecciones()
+    {
+        return $this->hasMany(Recoleccion::class);
+    }
+
+    public function gastosRegistrados()
+    {
+        return $this->hasMany(Gasto::class, 'user_id');
+    }
+
+    // Roles diferentes
+    public function isAdmin()
+    {
+        return $this->rol === 'administrador';
+    }
+
+    public function isEncargado()
+    {
+        return $this->rol === 'encargado';
+    }
+
+    public function isRecolector()
+    {
+        return $this->rol === 'recolector';
+    }    
 }
