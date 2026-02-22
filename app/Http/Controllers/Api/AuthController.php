@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -16,6 +17,23 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('username', $request->username)->first();
-        
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'error' => 'Invalid username or password'
+            ], 401);
+        }
+
+        // Generacion de token stateless
+        $token = $user->createToken('token-usuario')->plainTextToken;
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+            ],
+            'token' => $token
+        ]);
     }
 }
