@@ -16,9 +16,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $trabajadores = User::where ('rol', '!=', 'administrador')
-        ->select('id', 'name', 'username', 'dni', 'telefono', 'rol', 'fecha_alta', 'fecha_baja')
-        ->get();
+        $trabajadores = User::where('rol', '!=', 'administrador')
+            ->select('id', 'name', 'username', 'dni', 'telefono', 'rol', 'fecha_alta', 'fecha_baja')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -33,12 +33,12 @@ class UserController extends Controller
      * @param [type] $id
      * @return void
      */
-    public function show ($id)
+    public function show($id)
     {
-        $trabajador = User::where('rol', '!=','administrador')
-        ->where('id', $id)
-        ->select('id', 'name', 'username', 'dni', 'telefono', 'rol', 'fecha_alta', 'fecha_baja')
-        ->first();
+        $trabajador = User::where('rol', '!=', 'administrador')
+            ->where('id', $id)
+            ->select('id', 'name', 'username', 'dni', 'telefono', 'rol', 'fecha_alta', 'fecha_baja')
+            ->first();
 
         if (!$trabajador) {
             return response()->json([
@@ -64,6 +64,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'username' => 'required|string|unique:users,username',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'dni' => 'required|string|unique:users,dni|regex:/^[0-9]{8}[A-Z]$/',
             'telefono' => 'required|string|regex:/^[67][0-9]{8}$/',
@@ -74,6 +75,8 @@ class UserController extends Controller
         $trabajador = User::create([
             'name' => $request->name,
             'username' => $request->username,
+            'email' => $request->email,
+            'email_verified_at' => now(),
             'password' => Hash::make($request->password),
             'dni' => $request->dni,
             'telefono' => $request->telefono,
@@ -99,8 +102,8 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $trabajador = User::where('rol', '!=', 'administrador')
-        ->where('id', $id)
-        ->first();
+            ->where('id', $id)
+            ->first();
 
         if (!$trabajador) {
             return response()->json([
@@ -111,25 +114,25 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'username' => 'required|string|unique:users,username,'.$id,
+            'username' => 'required|string|unique:users,username,' . $id,
+            'email' => 'nullable|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8',
-            'dni' => 'required|string|unique:users,dni,'.$id.'|regex:/^[0-9]{8}[A-Z]$/',
+            'dni' => 'required|string|unique:users,dni,' . $id . '|regex:/^[0-9]{8}[A-Z]$/',
             'telefono' => 'required|string|regex:/^[67][0-9]{8}$/',
             'rol' => 'required|in:encargado,recolector,administrador',
             'fecha_alta' => 'required|date|before_or_equal:today',
             'fecha_baja' => 'nullable|date|after_or_equal:fecha_alta',
         ]);
 
-        $trabajador->update([
-            'name' => $request->name,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'dni' => $request->dni,
-            'telefono' => $request->telefono,
-            'rol' => $request->rol,
-            'fecha_alta' => $request->fecha_alta,
-            'fecha_baja' => $request->fecha_baja ?? null,
-        ]);
+        // Actualización de campos
+        $data = $request->only(['name', 'username', 'email', 'dni', 'telefono', 'rol', 'fecha_alta', 'fecha_baja']);
+
+        // Si se proporciona nueva contraseña
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $trabajador->update($data);
 
         return response()->json([
             'success' => true,
@@ -141,8 +144,8 @@ class UserController extends Controller
     public function destroy($id)
     {
         $trabajador = User::where('rol', '!=', 'administrador')
-        ->where('id', $id)
-        ->first();
+            ->where('id', $id)
+            ->first();
 
         if (!$trabajador) {
             return response()->json([
