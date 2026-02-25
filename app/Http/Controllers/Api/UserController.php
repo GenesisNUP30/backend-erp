@@ -89,6 +89,13 @@ class UserController extends Controller
         ], 201);
     }
 
+    /**
+     * Edita un trabajador existente y valida los datos enviados.
+     *
+     * @param Request $request
+     * @param [type] $id
+     * @return void
+     */
     public function update(Request $request, $id)
     {
         $trabajador = User::where('rol', '!=', 'administrador')
@@ -129,5 +136,26 @@ class UserController extends Controller
             'message' => 'El trabajador ha sido actualizado correctamente',
             'data' => $trabajador
         ], 200);
+    }
+
+    public function destroy($id)
+    {
+        $trabajador = User::where('rol', '!=', 'administrador')
+        ->where('id', $id)
+        ->first();
+
+        if (!$trabajador) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró el trabajador solicitado'
+            ], 404);
+        }
+
+        $trabajador->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'El trabajador ha sido eliminado correctamente'
+        ]);
     }
 }
