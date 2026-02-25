@@ -27,6 +27,12 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Muestra los datos de un trabajador especificado por su id..
+     *
+     * @param [type] $id
+     * @return void
+     */
     public function show ($id)
     {
         $trabajador = User::where('rol', '!=','administrador')
@@ -47,6 +53,12 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Permite crear un nuevo trabajador y validar los datos enviados.
+     *
+     * @param Request $request
+     * @return void
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -75,5 +87,47 @@ class UserController extends Controller
             'message' => 'El trabajador ha sido creado correctamente',
             'data' => $trabajador
         ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $trabajador = User::where('rol', '!=', 'administrador')
+        ->where('id', $id)
+        ->first();
+
+        if (!$trabajador) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró el trabajador solicitado'
+            ], 404);
+        }
+
+        $request->validate([
+            'name' => 'required',
+            'username' => 'required|string|unique:users,username,'.$id,
+            'password' => 'nullable|string|min:8',
+            'dni' => 'required|string|unique:users,dni,'.$id.'|regex:/^[0-9]{8}[A-Z]$/',
+            'telefono' => 'required|string|regex:/^[67][0-9]{8}$/',
+            'rol' => 'required|in:encargado,recolector,administrador',
+            'fecha_alta' => 'required|date|before_or_equal:today',
+            'fecha_baja' => 'nullable|date|after_or_equal:fecha_alta',
+        ]);
+
+        $trabajador->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'dni' => $request->dni,
+            'telefono' => $request->telefono,
+            'rol' => $request->rol,
+            'fecha_alta' => $request->fecha_alta,
+            'fecha_baja' => $request->fecha_baja ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'El trabajador ha sido actualizado correctamente',
+            'data' => $trabajador
+        ], 200);
     }
 }
