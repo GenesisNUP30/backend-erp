@@ -25,4 +25,26 @@ class UserController extends Controller
             'count' => $trabajadores->count()
         ]);
     }
+
+    public function show ($id)
+    {
+        $trabajador = User::where('rol', '!=','administrador')
+        ->where('id', $id)
+        ->select('id', 'name', 'username', 'dni', 'telefono', 'rol', 'fecha_alta', 'fecha_baja')
+        ->first();
+
+        if (!$trabajador) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró el trabajador solicitado'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $trabajador
+        ]);
+    }
+
+    
 }
