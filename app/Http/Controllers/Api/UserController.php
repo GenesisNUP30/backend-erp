@@ -52,7 +52,7 @@ class UserController extends Controller
             'data' => $trabajador
         ]);
     }
-
+    //TODO: Definir si se permitirá añadir email como campo obligatorio y si se usara para recuperar contraseña
     /**
      * Permite crear un nuevo trabajador y validar los datos enviados.
      *
@@ -62,7 +62,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|required|string|max:60',
             'username' => 'required|string|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
@@ -92,6 +92,7 @@ class UserController extends Controller
         ], 201);
     }
 
+    //TODO: Definir si se permitirá añadir email como campo obligatorio y si se usara para recuperar contraseña
     /**
      * Edita un trabajador existente y valida los datos enviados.
      *
@@ -113,14 +114,14 @@ class UserController extends Controller
         }
 
         $request->validate([
-            'name' => 'required',
-            'username' => 'required|string|unique:users,username,' . $id,
-            'email' => 'nullable|email|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
-            'dni' => 'required|string|unique:users,dni,' . $id . '|regex:/^[0-9]{8}[A-Z]$/',
-            'telefono' => 'required|string|regex:/^[67][0-9]{8}$/',
-            'rol' => 'required|in:encargado,recolector,administrador',
-            'fecha_alta' => 'required|date|before_or_equal:today',
+            'name' => 'sometimes|required|string|max:60',
+            'username' => 'sometimes|required|string|unique:users,username,' . $id,
+            'email' => 'sometimes|nullable|email|unique:users,email,' . $id,
+            'password' => 'sometimes|nullable|string|min:8',
+            'dni' => 'sometimes|string|unique:users,dni,' . $id . '|regex:/^[0-9]{8}[A-Z]$/',
+            'telefono' => 'sometimes|string|regex:/^[67][0-9]{8}$/',
+            'rol' => 'sometimes|required|in:encargado,recolector,administrador',
+            'fecha_alta' => 'sometimes|required|date|before_or_equal:today',
             'fecha_baja' => 'nullable|date|after_or_equal:fecha_alta',
         ]);
 

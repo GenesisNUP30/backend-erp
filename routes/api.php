@@ -5,13 +5,12 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/* Rutas sin proteger*/
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/trabajadores', [UserController::class, 'index']);
-Route::get('/trabajadores/{id}', [UserController::class, 'show']);
-Route::post('/trabajadores/crear', [UserController::class, 'store']);
-Route::put('/trabajadores/{id}/editar', [UserController::class, 'update']);
-Route::delete('/trabajadores/{id}/eliminar', [UserController::class, 'destroy']);
 
+Route::apiResource('/trabajadores', UserController::class)->except(['create', 'edit']);
+
+/* Rutas protegidas por el middleware de sanctum */
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
