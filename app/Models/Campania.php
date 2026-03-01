@@ -19,13 +19,18 @@ class Campania extends Model
     ];
 
     protected $casts = [
-        'fecha_inicio' => 'date',
-        'fecha_fin' => 'date',
+        'fecha_inicio' => 'date:Y-m-d',
+        'fecha_fin' => 'date:Y-m-d',
     ];
 
-    // Relaciones
-    public function cultivos()
+    public function scopeOrdernarPorFechaInicio($query)
     {
-        return $this->hasMany(Cultivo::class);
+        return $query->orderBy('fecha_inicio', 'asc');
     }
+
+    // Relaciones
+    // public function cultivos()
+    // {
+    //     return $this->hasMany(Cultivo::class);
+    // }
 }
