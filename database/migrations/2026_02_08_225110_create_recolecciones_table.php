@@ -12,9 +12,9 @@ return new class extends Migration
         Schema::create('recolecciones', function (Blueprint $table) {
             // Campo clave primaria (PK) autoincremental
             $table->id();
-            // Campo de clave foránea (FK) al cultivo (se elimina en cascada si se borra el cultivo)
-            $table->foreignId('cultivo_id')
-                ->constrained('cultivos')
+            // Campo de clave foránea (FK) a la cosecha (se elimina en cascada si se borra la cosecha)
+            $table->foreignId('cosecha_id')
+                ->constrained('cosechas')
                 ->cascadeOnDelete();
 
             // FK al usuario que registra

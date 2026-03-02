@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('ventas_diarias', function (Blueprint $table) {
             $table->id();
             $table->date('fecha');
-            $table->foreignId('cultivo_id')
-                ->constrained('cultivos');
+            $table->foreignId('cosecha_id')
+                ->constrained('cosechas');
 
             $table->decimal('kilos_primera', 10, 2);
             $table->decimal('precio_primera', 8, 2);

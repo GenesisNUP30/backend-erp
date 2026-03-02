@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('consumo_agua', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cultivo_id')
-            ->constrained('cultivos')
+            $table->foreignId('cosecha_id')
+            ->constrained('cosechas')
             ->cascadeOnDelete();
             $table->date('fecha_inicio');
             $table->date('fecha_fin');

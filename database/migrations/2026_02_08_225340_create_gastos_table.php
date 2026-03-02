@@ -17,7 +17,7 @@ return new class extends Migration
                 ->constrained('categorias_gastos')
                 ->cascadeOnDelete();
 
-            $table->foreignId('cultivo_id')
+            $table->foreignId('cosecha_id')
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();

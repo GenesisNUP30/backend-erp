@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cultivos', function (Blueprint $table) {
+        Schema::create('plantaciones', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parcela_id')
                 ->constrained('parcelas')
@@ -20,20 +20,15 @@ return new class extends Migration
             $table->foreignId('variedad_id')
                 ->constrained('variedades');
 
-            $table->foreignId('campania_id')
-                ->constrained('campanias')
-                ->cascadeOnDelete();
-
             $table->date('fecha_siembra');
             $table->integer('numero_plantas');
 
             $table->date('fecha_fin')->nullable();
 
             $table->enum('estado', [
-                'sin_sembrar',
-                'en_crecimiento',
-                'en_recoleccion',
-                'finalizado'
+                'planificada',
+                'activa',
+                'finalizada',
             ]);
             $table->timestamps();
         });
