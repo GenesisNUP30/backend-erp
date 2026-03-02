@@ -14,9 +14,10 @@ class RecoleccionController extends Controller
     public function index(Request $request)
     {
         $recolecciones = Recoleccion::with(['cosecha', 'cosecha.plantacion', 'cosecha.plantacion.variedad', 'recolector'])
-            ->fecha($request->query('fecha'))
             ->cosecha($request->query('cosecha_id'))
             ->recolector($request->query('user_id'))
+            ->fechaDesde($request->query('fecha_desde'))
+            ->fechaHasta($request->query('fecha_hasta'))
             ->orderBy('fecha', 'desc')
             ->paginate(10);
 

@@ -53,6 +53,22 @@ class Recoleccion extends Model
         return $query;
     }
 
+    public function scopeFechaDesde($query, $fecha)
+    {
+        if ($fecha) {
+            return $query->whereDate('fecha', '>=', $fecha);
+        }
+        return $query;
+    }
+
+    public function scopeFechaHasta($query, $fecha)
+    {
+        if ($fecha) {
+            return $query->whereDate('fecha', '<=', $fecha);
+        }
+        return $query;
+    }
+
     public function scopeCosecha($query, $cosecha_id)
     {
         if ($cosecha_id) {
