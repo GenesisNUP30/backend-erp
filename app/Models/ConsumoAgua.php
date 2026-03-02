@@ -24,9 +24,11 @@ class ConsumoAgua extends Model
         'litros_consumidos' => 'decimal:2',
     ];
 
+    public $timestamps = false;
+
     //Relaciones
-    public function cultivo()
+    public function plantacion()
     {
-        return $this->belongsTo(Cultivo::class);
+        return $this->belongsTo(Plantacion::class);
     }
 }

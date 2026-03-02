@@ -24,6 +24,8 @@ class PrecioSemana extends Model
         'semana_fin' => 'date',
     ];
 
+    public $timestamps = false;
+
     //Relaciones
     public function variedad()
     {

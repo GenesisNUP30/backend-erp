@@ -32,9 +32,9 @@ class Gasto extends Model
         return $this->belongsTo(CategoriaGasto::class, 'categoria_id');
     }
 
-    public function cultivo()
+    public function plantacion()
     {
-        return $this->belongsTo(Cultivo::class);
+        return $this->belongsTo(Plantacion::class);
     }
 
     public function user()

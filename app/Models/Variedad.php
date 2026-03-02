@@ -14,10 +14,12 @@ class Variedad extends Model
         'descripcion',
     ];
 
+    public $timestamps = false;
+
     //Relaciones
-    public function cultivos()
+    public function plantaciones()
     {
-        return $this->hasMany(Cultivo::class);
+        return $this->hasMany(Plantacion::class);
     }
 
     public function preciosSemanales()

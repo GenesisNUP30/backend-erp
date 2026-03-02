@@ -23,13 +23,15 @@ class Recoleccion extends Model
         'fecha' => 'date',  // Convierte automáticamente a objeto Carbon/Date
     ];
 
+    public $timestamps = false;
+
     /**
      * Relación: Una recolección pertenece a un cultivo
      * Permite acceder al cultivo asociado: $recoleccion->cultivo
      */
-    public function cultivo()
+    public function cosecha()
     {
-        return $this->belongsTo(Cultivo::class);
+        return $this->belongsTo(Cosecha::class);
     }
 
      /**

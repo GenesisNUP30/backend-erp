@@ -27,9 +27,11 @@ class VentaDiaria extends Model
         'importe_total' => 'decimal:2',
     ];
 
+    public $timestamps = false;
+
     //Relaciones
-    public function cultivo()
+    public function cosecha()
     {
-        return $this->belongsTo(Cultivo::class);
+        return $this->belongsTo(Cosecha::class);
     }
 }

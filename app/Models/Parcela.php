@@ -20,9 +20,11 @@ class Parcela extends Model
         'superficie_hectareas' => 'decimal:8',
     ];
 
+    public $timestamps = false;
+
     // Relaciones
-    public function cultivos()
+    public function plantaciones()
     {
-        return $this->hasMany(Cultivo::class);
+        return $this->hasMany(Plantacion::class);
     }
 }

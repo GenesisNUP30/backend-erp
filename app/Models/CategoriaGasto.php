@@ -16,6 +16,8 @@ class CategoriaGasto extends Model
         'descripcion',
     ];
 
+    public $timestamps = false;
+
     //Relaciones
     public function gastos()
     {
