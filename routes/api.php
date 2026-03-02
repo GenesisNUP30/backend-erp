@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CampaniaController;
 use App\Http\Controllers\Api\CosechaController;
 use App\Http\Controllers\Api\ParcelaController;
 use App\Http\Controllers\Api\PlantacionController;
+use App\Http\Controllers\Api\RecoleccionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,8 @@ Route::apiResource('/parcelas', ParcelaController::class);
 Route::apiResource('/plantaciones', PlantacionController::class);
 
 Route::apiResource('/cosechas', CosechaController::class);
+
+Route::apiResource('/recolecciones', RecoleccionController::class);
 
 /* Rutas protegidas por el middleware de sanctum */
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {

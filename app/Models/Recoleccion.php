@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,7 @@ class Recoleccion extends Model
 
     // Campos permitidos para asignación masiva
     protected $fillable = [
-        'cultivo_id',
+        'cosecha_id',
         'user_id',
         'fecha',
         'kilos_primera',
@@ -34,12 +35,37 @@ class Recoleccion extends Model
         return $this->belongsTo(Cosecha::class);
     }
 
-     /**
+    /**
      * Relación: Una recolección pertenece a un usuario (recolector)
      * El segundo parámetro especifica la clave foránea personalizada
      */
     public function recolector()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Scopes para filtros
+    public function scopeFecha($query, $fecha)
+    {
+        if ($fecha) {
+            return $query->whereDate('fecha', $fecha);
+        }
+        return $query;
+    }
+
+    public function scopeCosecha($query, $cosecha_id)
+    {
+        if ($cosecha_id) {
+            return $query->where('cosecha_id', $cosecha_id);
+        }
+        return $query;
+    }
+
+    public function scopeRecolector($query, $user_id)
+    {
+        if ($user_id) {
+            return $query->where('user_id', $user_id);
+        }
+        return $query;
     }
 }
