@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ParcelaController;
 use App\Http\Controllers\Api\PlantacionController;
 use App\Http\Controllers\Api\RecoleccionController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VentaDiariaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,8 @@ Route::apiResource('/plantaciones', PlantacionController::class);
 Route::apiResource('/cosechas', CosechaController::class);
 
 Route::apiResource('/recolecciones', RecoleccionController::class);
+
+Route::apiResource('/ventas-diarias', VentaDiariaController::class);
 
 /* Rutas protegidas por el middleware de sanctum */
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
