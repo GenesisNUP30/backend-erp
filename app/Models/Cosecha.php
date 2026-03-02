@@ -46,5 +46,28 @@ class Cosecha extends Model
         return $this->hasMany(VentaDiaria::class);
     }
 
+    // Scopes para filtros
+    public function scopeEstado($query, $estado)
+    {
+        if ($estado) {
+            return $query->where('estado', $estado);
+        }
+        return $query;
+    }
 
+    public function scopePlantacion($query, $plantacion_id)
+    {
+        if ($plantacion_id) {
+            return $query->where('plantacion_id', $plantacion_id);
+        }
+        return $query;
+    }
+
+    public function scopeCampania($query, $campania_id)
+    {
+        if ($campania_id) {
+            return $query->where('campania_id', $campania_id);
+        }
+        return $query;
+    }
 }
