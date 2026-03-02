@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CampaniaController;
+use App\Http\Controllers\Api\ParcelaController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,7 @@ Route::apiResource('/trabajadores', UserController::class);
 
 Route::apiResource('/campanias', CampaniaController::class);
 
+Route::apiResource('/parcelas', ParcelaController::class);
 
 /* Rutas protegidas por el middleware de sanctum */
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {

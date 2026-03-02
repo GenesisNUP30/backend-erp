@@ -17,7 +17,7 @@ class Parcela extends Model
     ];
 
     protected $casts = [
-        'superficie_hectareas' => 'decimal:8',
+        'superficie_hectareas' => 'decimal:2',
     ];
 
     public $timestamps = false;
@@ -26,5 +26,15 @@ class Parcela extends Model
     public function plantaciones()
     {
         return $this->hasMany(Plantacion::class);
+    }
+
+    // Scope para filtrar por estado
+    public function scopeEstado($query, $estado)
+    {
+        if ($estado) {
+            return $query->where('estado', $estado);
+        }
+
+        return $query;
     }
 }
