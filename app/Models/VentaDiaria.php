@@ -34,4 +34,37 @@ class VentaDiaria extends Model
     {
         return $this->belongsTo(Cosecha::class);
     }
+
+    // Scopes para filtros
+    public function scopeFecha($query, $fecha)
+    {
+        if ($fecha) {
+            return $query->whereDate('fecha', $fecha);
+        }
+        return $query;
+    }
+
+    public function scopeFechaDesde($query, $fecha)
+    {
+        if ($fecha) {
+            return $query->whereDate('fecha', '>=', $fecha);
+        }
+        return $query;
+    }
+
+    public function scopeFechaHasta($query, $fecha)
+    {
+        if ($fecha) {
+            return $query->whereDate('fecha', '<=', $fecha);
+        }
+        return $query;
+    }
+
+    public function scopeCosecha($query, $cosecha_id)
+    {
+        if ($cosecha_id) {
+            return $query->where('cosecha_id', $cosecha_id);
+        }
+        return $query;
+    }
 }
