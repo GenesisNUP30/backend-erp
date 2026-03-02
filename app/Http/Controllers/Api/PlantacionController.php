@@ -14,15 +14,12 @@ class PlantacionController extends Controller
     public function index(Request $request)
     {
         $plantaciones = Plantacion::with(['parcela', 'variedad', 'cosechas'])
-            ->when($request->query('estado'), function ($query, $estado) {
-                $query->where('estado', $estado);
-            })
-            ->when($request->query('parcela_id'), function ($query, $parcela_id) {
-                $query->where('parcela_id', $parcela_id);
-            })
-            ->when($request->query('variedad_id'), function ($query, $variedad_id) {
-                $query->where('variedad_id', $variedad_id);
-            })
+            ->estado($request->query('estado'))
+            ->parcela($request->query('parcela_id'))
+            ->variedad($request->query('variedad_id'))
+            ->campania($request->query('campania_id'))
+            ->fechaSiembraDesde($request->query('fecha_desde'))
+            ->fechaSiembraHasta($request->query('fecha_hasta'))
             ->orderBy('fecha_siembra', 'desc')
             ->paginate(10);
 
