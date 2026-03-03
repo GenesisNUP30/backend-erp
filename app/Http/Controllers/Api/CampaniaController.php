@@ -35,7 +35,7 @@ class CampaniaController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:campanias,nombre',
             'fecha_inicio' => 'required|date|before_or_equal:fecha_fin',
-            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'fecha_fin' => 'sometimes|date|after_or_equal:fecha_inicio',
             'descripcion' => 'nullable|string',
             'estado' => 'required|in:activa,finalizada,planificada',
         ]);

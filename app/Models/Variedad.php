@@ -12,10 +12,15 @@ class Variedad extends Model
 
     protected $fillable = [
         'nombre',
+        'tipo',
         'descripcion',
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
+
+    protected $casts = [
+        'tipo' => 'string',
+    ];
 
     //Relaciones
     public function plantaciones()
@@ -26,5 +31,19 @@ class Variedad extends Model
     public function preciosSemanales()
     {
         return $this->hasMany(PrecioSemana::class);
+    }
+
+    // Scopes para filtros
+    public function scopeTipo($query, ?string $tipo)
+    {
+        return $tipo ? $query->where('tipo', $tipo) : $query;
+    }
+
+    /**
+     * Accessor para nombre completo (con tipo).
+     */
+    public function getNombreCompletoAttribute(): string
+    {
+        return "{$this->nombre} ({$this->tipo})";
     }
 }
