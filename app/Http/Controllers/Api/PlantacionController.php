@@ -13,15 +13,20 @@ class PlantacionController extends Controller
      */
     public function index(Request $request)
     {
-        $plantaciones = Plantacion::with(['parcela', 'variedad', 'cosechas'])
+        $plantaciones = Plantacion::with([
+            'parcela:id,nombre,ubicacion',
+            'variedad:id,nombre,tipo'
+        ])
+            ->withCount('cosechas')
             ->estado($request->query('estado'))
             ->parcela($request->query('parcela_id'))
             ->variedad($request->query('variedad_id'))
-            ->campania($request->query('campania_id'))
-            ->fechaSiembraDesde($request->query('fecha_desde'))
-            ->fechaSiembraHasta($request->query('fecha_hasta'))
+            ->fechaSiembra(
+                $request->query('fecha_desde'),
+                $request->query('fecha_hasta')
+            )
             ->orderBy('fecha_siembra', 'desc')
-            ->paginate(10);
+            ->paginate(15);
 
         return response()->json([
             'success' => true,
@@ -40,30 +45,21 @@ class PlantacionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'parcela_id' => 'required|exists:parcelas,id',
             'variedad_id' => 'required|exists:variedades,id',
-            'campania_id' => 'required|exists:campanias,id',
             'fecha_siembra' => 'required|date|before_or_equal:today',
             'numero_plantas' => 'required|integer|min:1',
-            'estado' => 'required|in:plantado,en_crecimiento,en_recoleccion,poda,finalizado',
+            'estado' => 'required|in:planificada,activa,finalizada',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_siembra',
         ]);
 
-        $plantacion = Plantacion::create($request->only([
-            'parcela_id',
-            'variedad_id',
-            'campania_id',
-            'fecha_siembra',
-            'numero_plantas',
-            'estado',
-            'fecha_fin'
-        ]));
+        $plantacion = Plantacion::create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Plantación creada correctamente',
-            'data' => $plantacion
+            'data' => $plantacion->load(['parcela', 'variedad'])
         ], 201);
     }
 
@@ -72,7 +68,14 @@ class PlantacionController extends Controller
      */
     public function show(string $id)
     {
-        $plantacion = Plantacion::with(['parcela', 'variedad', 'cosechas'])->find($id);
+        $plantacion = Plantacion::with([
+            'parcela',
+            'variedad',
+            'cosechas' => function ($query) {
+                $query->with('campania:id,nombre,estado')
+                    ->orderBy('fecha_inicio', 'desc');
+            }
+        ])->find($id);
 
         if (!$plantacion) {
             return response()->json([
@@ -101,30 +104,21 @@ class PlantacionController extends Controller
             ], 404);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'parcela_id' => 'sometimes|required|exists:parcelas,id',
             'variedad_id' => 'sometimes|required|exists:variedades,id',
-            'campania_id' => 'sometimes|required|exists:campanias,id',
             'fecha_siembra' => 'sometimes|required|date|before_or_equal:today',
             'numero_plantas' => 'sometimes|required|integer|min:1',
-            'estado' => 'sometimes|required|in:plantado,en_crecimiento,en_recoleccion,poda,finalizado',
+            'estado' => 'sometimes|required|in:planificada,activa,finalizada',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_siembra',
         ]);
 
-        $plantacion->update($request->only([
-            'parcela_id',
-            'variedad_id',
-            'campania_id',
-            'fecha_siembra',
-            'numero_plantas',
-            'estado',
-            'fecha_fin'
-        ]));
+        $plantacion->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Plantación actualizada correctamente',
-            'data' => $plantacion
+            'data' => $plantacion->fresh()
         ]);
     }
 

@@ -13,7 +13,6 @@ class Plantacion extends Model
     protected $fillable = [
         'parcela_id',
         'variedad_id',
-        'campania_id',
         'fecha_siembra',
         'numero_plantas',
         'fecha_fin',
@@ -23,6 +22,7 @@ class Plantacion extends Model
     protected $casts = [
         'fecha_siembra' => 'date:Y-m-d',
         'fecha_fin' => 'date:Y-m-d',
+        'numero_plantas' => 'integer',
     ];
 
     public $timestamps = false;
@@ -44,51 +44,37 @@ class Plantacion extends Model
     }
 
     // Scopes para filtros
-    public function scopeEstado($query, $estado)
+    public function scopeEstado($query, ?string $estado)
     {
-        if ($estado) {
-            return $query->where('estado', $estado);
+        return $estado ? $query->where('estado', $estado) : $query;
+    }
+
+    public function scopeParcela($query, ?int $parcela_id)
+    {
+        return $parcela_id ? $query->where('parcela_id', $parcela_id) : $query;
+    }
+
+    public function scopeVariedad($query, ?int $variedad_id)
+    {
+        return $variedad_id ? $query->where('variedad_id', $variedad_id) : $query;
+    }
+
+    public function scopeFechaSiembra($query, ?string $desde, ?string $hasta)
+    {
+        if ($desde) {
+            $query->whereDate('fecha_siembra', '>=', $desde);
+        }
+        if ($hasta) {
+            $query->whereDate('fecha_siembra', '<=', $hasta);
         }
         return $query;
     }
 
-    public function scopeParcela($query, $parcela_id)
+    /**
+     * Accessor para superficie estimada (asumiendo 1.5m² por planta).
+     */
+    public function getSuperficieEstimadaAttribute(): float
     {
-        if ($parcela_id) {
-            return $query->where('parcela_id', $parcela_id);
-        }
-        return $query;
-    }
-
-    public function scopeVariedad($query, $variedad_id)
-    {
-        if ($variedad_id) {
-            return $query->where('variedad_id', $variedad_id);
-        }
-        return $query;
-    }
-
-    public function scopeCampania($query, $campania_id)
-    {
-        if ($campania_id) {
-            return $query->where('campania_id', $campania_id);
-        }
-        return $query;
-    }
-
-    public function scopeFechaSiembraDesde($query, $fecha)
-    {
-        if ($fecha) {
-            return $query->whereDate('fecha_siembra', '>=', $fecha);
-        }
-        return $query;
-    }
-
-    public function scopeFechaSiembraHasta($query, $fecha)
-    {
-        if ($fecha) {
-            return $query->whereDate('fecha_siembra', '<=', $fecha);
-        }
-        return $query;
+        return round($this->numero_plantas * 1.5 / 10000, 2); // Hectáreas
     }
 }
