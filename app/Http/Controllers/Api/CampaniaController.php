@@ -8,19 +8,28 @@ use Illuminate\Http\Request;
 
 class CampaniaController extends Controller
 {
-    /*Display a listing of the resource.*/
-    public function index()
+    // Lista campañas con paginación y filtros.
+    public function index(Request $request)
     {
-        $campanias = Campania::ordernarPorFechaInicio()->get();
+        $campanias = Campania::withCount('cosechas')
+            ->estado($request->query('estado'))
+            ->fechas($request->query('fecha_inicio'), $request->query('fecha_fin'))
+            ->orderBy('fecha_inicio', 'desc')
+            ->paginate(10);
 
         return response()->json([
             'success' => true,
-            'data' => $campanias,
-            'count' => $campanias->count()
+            'data' => $campanias->items(),
+            'meta' => [
+                'current_page' => $campanias->currentPage(),
+                'last_page' => $campanias->lastPage(),
+                'per_page' => $campanias->perPage(),
+                'total' => $campanias->total(),
+            ]
         ]);
     }
 
-    /*Store a newly created resource in storage.*/
+    // Crea una nueva campaña con validación robusta.
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -40,10 +49,10 @@ class CampaniaController extends Controller
         ], 201);
     }
 
-    /*Display the specified resource.*/
+    // Muestra una campaña específica con relaciones esenciales.
     public function show(string $id)
     {
-        $campania = Campania::find($id);
+        $campania = Campania::withCount('cosechas')->find($id);
 
         if (!$campania) {
             return response()->json([
@@ -58,7 +67,7 @@ class CampaniaController extends Controller
         ]);
     }
 
-    /*Update the specified resource in storage.*/
+    // Actualiza una campaña existente con validación condicional.
     public function update(Request $request, string $id)
     {
         $campania = Campania::find($id);
@@ -87,16 +96,23 @@ class CampaniaController extends Controller
         ]);
     }
 
-    /*Remove the specified resource from storage.*/
+    // Elimina una campaña (soft delete) con protección de integridad.
     public function destroy(string $id)
     {
-        $campania = Campania::find($id);
+        $campania = Campania::withCount('cosechas')->find($id);
 
         if (!$campania) {
             return response()->json([
                 'success' => false,
                 'message' => 'Campaña no encontrada'
             ], 404);
+        }
+
+        if ($campania->cosechas_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar una campaña con cosechas asociadas',
+            ], 409);
         }
 
         $campania->delete();

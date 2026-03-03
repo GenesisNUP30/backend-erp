@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Testing\Fluent\Concerns\Has;
 
 class Campania extends Model
 {
@@ -26,14 +25,36 @@ class Campania extends Model
 
     public $timestamps = false;
 
-    public function scopeOrdernarPorFechaInicio($query)
+    // Relaciones
+    public function cosechas()
     {
-        return $query->orderBy('fecha_inicio', 'asc');
+        return $this->hasMany(Cosecha::class);
     }
 
-    // Relaciones
-    // public function plantaciones()
-    // {
-    //     return $this->hasMany(Plantacion::class);
-    // }
+    /**
+     * Scopes para filtrado eficiente.
+     */
+    public function scopeEstado($query, ?string $estado)
+    {
+        return $estado ? $query->where('estado', $estado) : $query;
+    }
+
+    public function scopeFechas($query, ?string $inicio, ?string $fin)
+    {
+        if ($inicio) {
+            $query->whereDate('fecha_inicio', '>=', $inicio);
+        }
+        if ($fin) {
+            $query->whereDate('fecha_fin', '<=', $fin);
+        }
+        return $query;
+    }
+
+    /**
+     * Accesor para duración de la campaña en días.
+     */
+    public function getDuracionAttribute(): int
+    {
+        return $this->fecha_inicio->diffInDays($this->fecha_fin);
+    }
 }

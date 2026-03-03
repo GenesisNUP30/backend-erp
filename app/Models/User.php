@@ -83,5 +83,5 @@ class User extends Authenticatable
     public function isRecolector()
     {
         return $this->rol === 'recolector';
-    }    
+    }
 }
