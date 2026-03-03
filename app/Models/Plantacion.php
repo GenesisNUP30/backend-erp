@@ -10,6 +10,8 @@ class Plantacion extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'plantaciones';
+
     protected $fillable = [
         'parcela_id',
         'variedad_id',

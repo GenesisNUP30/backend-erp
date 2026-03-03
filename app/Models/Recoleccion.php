@@ -10,6 +10,8 @@ class Recoleccion extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'recolecciones';
+
     // Campos permitidos para asignación masiva
     protected $fillable = [
         'cosecha_id',

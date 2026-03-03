@@ -10,6 +10,8 @@ class Cosecha extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'cosechas';
+
     protected $fillable = [
         'plantacion_id',
         'campania_id',
