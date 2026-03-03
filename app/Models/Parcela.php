@@ -21,7 +21,7 @@ class Parcela extends Model
         'superficie_hectareas' => 'decimal:2',
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     // Relaciones
     public function plantaciones()
@@ -32,10 +32,14 @@ class Parcela extends Model
     // Scope para filtrar por estado
     public function scopeEstado($query, $estado)
     {
-        if ($estado) {
-            return $query->where('estado', $estado);
-        }
+        return $estado ? $query->where('estado', $estado) : $query;
+    }
 
-        return $query;
+    /**
+     * Accessor para superficie formateada.
+     */
+    public function getSuperficieFormateadaAttribute(): string
+    {
+        return number_format($this->superficie_hectareas, 2) . ' ha';
     }
 }

@@ -25,7 +25,7 @@ class Plantacion extends Model
         'numero_plantas' => 'integer',
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     // Relaciones
     public function parcela()

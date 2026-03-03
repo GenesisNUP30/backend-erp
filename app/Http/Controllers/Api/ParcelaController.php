@@ -13,7 +13,7 @@ class ParcelaController extends Controller
      */
     public function index(Request $request)
     {
-        $parcelas = Parcela::query()
+        $parcelas = Parcela::withCount('plantaciones')
             ->estado($request->query('estado'))
             ->orderBy('nombre')
             ->paginate(10);
@@ -35,14 +35,14 @@ class ParcelaController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:parcelas,nombre',
             'superficie_hectareas' => 'required|numeric|min:0',
             'ubicacion' => 'required|string|max:255',
             'estado' => 'required|in:activa,inactiva,mantenimiento'
         ]);
 
-        $parcela = Parcela::create($request->only(['nombre', 'superficie_hectareas', 'ubicacion', 'estado']));
+        $parcela = Parcela::create($validated);
 
         return response()->json([
             'success' => true,
@@ -56,7 +56,12 @@ class ParcelaController extends Controller
      */
     public function show(string $id)
     {
-        $parcela = Parcela::with('plantaciones')->find($id);
+        $parcela = Parcela::with([
+            'plantaciones' => function ($query) {
+                $query->with('variedad:id,nombre')
+                    ->orderBy('fecha_siembra', 'desc');
+            }
+        ])->find($id);
 
         if (!$parcela) {
             return response()->json([
@@ -85,14 +90,14 @@ class ParcelaController extends Controller
             ], 404);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'nombre' => 'sometimes|required|string|max:255|unique:parcelas,nombre,' . $id,
             'superficie_hectareas' => 'sometimes|required|numeric|min:0',
             'ubicacion' => 'sometimes|required|string|max:255',
             'estado' => 'sometimes|required|in:activa,inactiva,mantenimiento'
         ]);
 
-        $parcela->update($request->only(['nombre', 'superficie_hectareas', 'ubicacion', 'estado']));
+        $parcela->update($validated);
 
         return response()->json([
             'success' => true,
