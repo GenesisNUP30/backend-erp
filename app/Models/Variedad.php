@@ -10,6 +10,8 @@ class Variedad extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'variedades';
+
     protected $fillable = [
         'nombre',
         'tipo',
