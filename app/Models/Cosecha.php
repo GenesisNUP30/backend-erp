@@ -22,9 +22,10 @@ class Cosecha extends Model
     protected $casts = [
         'fecha_inicio' => 'date:Y-m-d',
         'fecha_fin' => 'date:Y-m-d',
+        'numero_cosecha' => 'integer',
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     // Relaciones
     public function plantacion()
@@ -48,27 +49,39 @@ class Cosecha extends Model
     }
 
     // Scopes para filtros
-    public function scopeEstado($query, $estado)
+    public function scopeEstado($query, ?string $estado)
     {
-        if ($estado) {
-            return $query->where('estado', $estado);
+        return $estado ? $query->where('estado', $estado) : $query;
+    }
+
+    public function scopePlantacion($query, ?int $plantacion_id)
+    {
+        return $plantacion_id ? $query->where('plantacion_id', $plantacion_id) : $query;
+    }
+
+    public function scopeCampania($query, ?int $campania_id)
+    {
+        return $campania_id ? $query->where('campania_id', $campania_id) : $query;
+    }
+
+    public function scopeFechas($query, ?string $inicio, ?string $fin)
+    {
+        if ($inicio) {
+            $query->whereDate('fecha_inicio', '>=', $inicio);
+        }
+        if ($fin) {
+            $query->whereDate('fecha_fin', '<=', $fin);
         }
         return $query;
     }
 
-    public function scopePlantacion($query, $plantacion_id)
+    /**
+     * Accessor para producción total (kg).
+     */
+    public function getProduccionTotalAttribute(): float
     {
-        if ($plantacion_id) {
-            return $query->where('plantacion_id', $plantacion_id);
-        }
-        return $query;
-    }
-
-    public function scopeCampania($query, $campania_id)
-    {
-        if ($campania_id) {
-            return $query->where('campania_id', $campania_id);
-        }
-        return $query;
+        return $this->recolecciones->sum(function ($r) {
+            return $r->kilos_primera + $r->kilos_industria;
+        });
     }
 }
